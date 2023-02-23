@@ -1,0 +1,116 @@
+package com.classloading;
+
+class ClassA {
+   private int a1 = 1;
+   private String a2 = "深入解析Java编译器";
+   private Integer a3 = 12;
+   private int a4 = 22;
+}
+
+class ClassB extends ClassA {
+   private int b1 = 3;
+   private String b2 = "深入剖析Java虚拟机";
+   private int b3 = 33;
+   private ClassA b4 = new ClassA();
+}
+
+public class TestOopMapBlock {
+   public static void main(String[] args) {
+       ClassA x1 = new ClassA();
+       ClassB x2 = new ClassB();
+   }
+}
+
+ClassA和ClassB分别声明了两个对象类型的变量，因此表示这两个类的InstanceKlass实例都含有OopMapBlock结构。
+如果读者已经按第1章编译了slowdebug版本的OpenJDK 8，
+可以直接调用InstanceKlass::print_on()函数输出InstanceKlass实例的详细信息，
+同时也会输出InstanceKlass实例中包含的OopMapBlock信息，不过并没有直接输出OopMapBlock的数量，
+需要稍做改动，nstanceKlass::print_on()函数改动后的代码如下：
+
+st->print(BULLET"non-static oop maps: ");
+OopMapBlock* map     = start_of_nonstatic_oop_maps();
+OopMapBlock* end_map = map + nonstatic_oop_map_count();
+st->print(" %d  ",nonstatic_oop_map_count());  // 打印OopMapBlock的数量
+while (map < end_map) {
+   st->print("%d-%d (%d)", map->offset(), map->offset() + heapOopSize*
+(map->count() - 1),map->count());
+   map++;
+}
+直接在ClassFileParser::parseClassFile()函数的return语句之前调用print()函数，代码如下：
+
+this_klass->print(); // this_klass的类型为instanceKlassHandle
+
+这样会调用父类的Metadata类中的print()函数，然后调用InstanceKlass类中经过重写的虚函数print_on()。
+修改完成后运行以上实例，可以在控制台输出InstanceKlass实例的内存布局，同时还会输出对象的内存布局，
+如ClassA的相关打印信息如下
+
+- ---- static fields (0 words):
+ - ---- non-static fields (4 words):
+- private 'a1' 'I' @16
+- private 'a4' 'I' @20
+- private 'a2' 'Ljava/lang/String;' @24
+- private 'a3' 'Ljava/lang/Integer;' @28
+- non-static oop maps:  1  24-28 (2)
+
+其中，@后的数字表示字段在对象中存储的偏移量，最后一行表示有一个OopMap-Block，
+其偏移量范围为24～28，共含有两个对象类型的字段，由输出的对象布局可以看出，与OopMapBlock表示的信息是一致的
+
+ClassB的相关信息如下：
+
+- ---- static fields (0 words):
+- ---- non-static fields (8 words):
+- private 'a1' 'I' @16
+- private 'a4' 'I' @20
+- private 'a2' 'Ljava/lang/String;' @24
+- private 'a3' 'Ljava/lang/Integer;' @28
+- private 'b1' 'I' @32
+- private 'b3' 'I' @36
+- private 'b2' 'Ljava/lang/String;' @40
+- private 'b4' 'Lcom/classloading/ClassA;' @44
+- non-static oop maps:  2  24-28 (2)40-44 (2)
+
+子类完全复制了父类的字段，并且会完整保留父类的字段，以实现Java继承的特性。
+
+通过输出的non-static oop maps中的信息结合对象的布局可知，24～28为对象类型字段，共2个；
+40～44为对象类型字段，共2个，其描述与对象实际的布局严格一致。
+
+可以使用OpenJDK 8提供的HSDB工具或JOL查看两个类对象的具体布局，也可以使用-XX:+PrintFieldLayout选项进行输出，不过这些工具或命令都不能查看（或者不能直观地查看）OopMapBlock中保存的相关信息。
+
+配置命令可以更改对象的内存布局，命令如下：
+
+-XX:FieldsAllocationStyle=2
+
+在ClassFileParser::layout_fields()函数中对字段的布局处理如下：
+
+classFileParser.cpp#layout_fields 中 allocation_style == 2 是内存布局的模式
+
+allocation_style的值默认为1，也就是字段排列顺序为long/double、int、short/char、byte、oop，
+这样父类和子类的对象类型字段连接在一起的可能性不大，除非子类中只声明了对象类型字段。
+当allocation_style的值为2时，首先会布局oop，这样父类和子类的对象类型字段就会挨在一起，
+可通过父类的最后一个OopMapBlock来表示这一片连续的存储区域，方便垃圾回收一次性扫描出更多的被引用对象。
+
+实例5-6的输出信息如下：
+
+- ---- static fields (0 words):
+- ---- non-static fields (4 words):
+- private 'a1' 'I' @16
+ - private 'a4' 'I' @20
+ - private 'a2' 'Ljava/lang/String;' @24
+ - private 'a3' 'Ljava/lang/Integer;' @28
+ - non-static oop maps:  1  24-28 (2)
+
+ - ---- static fields (0 words):
+ - ---- non-static fields (8 words):
+ - private 'a1' 'I' @16
+ - private 'a4' 'I' @20
+ - private 'a2' 'Ljava/lang/String;' @24
+ - private 'a3' 'Ljava/lang/Integer;' @28
+ - private 'b2' 'Ljava/lang/String;' @32
+ - private 'b4' 'Lcom/classloading/ClassA;' @36
+ - private 'b1' 'I' @40
+ - private 'b3' 'I' @44
+ - non-static oop maps:  1  24-36 (4)
+
+可以看到，由于子类和父类的对象类型字段挨在一起，所以子类和父类可以共用一个OopMapBlock，偏移量范围从24到36中共有4个对象类型字段
+
+在后面介绍Serial和Serial Old收集器时会涉及对象的标记过程，可以了解到OopMapBlock在垃圾回收过程中发挥的重要作用。

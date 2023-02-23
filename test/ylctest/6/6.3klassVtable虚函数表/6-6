@@ -1,0 +1,18 @@
+有以下代码
+
+public abstract  class TestVtable  {
+   public void md(){}
+}
+
+在TestVtable类中会遍历两个方法：
+
+<init>方法：可以看到update_inherited_vtable()函数对
+vmSymbols::object_initializer_name()名称的处理是直接返回false，
+表示不需要新的vtableEntry。
+
+md()方法：会临时给对应的Method::_vtable_index赋值为Method::nonvirtual_vtable_index，
+然后遍历父类，看是否定义了名称为name、签名为signature的方法，
+如果有，很可能不需要新的vtableEntry，只需要更新已有的vtableEntry即可。
+由于TestVtable的默认父类为Object，Object中总共有5个方法会存储到vtable中（分别为finalize()、equals()、toString()、hashCode()和clone()），
+很明显md()并没有重写父类的任何方法，直接返回true，表示需要为此方法新增一个vtableEntry。
+这样Method::vtable_index的值会更新为initialized，也就是在vtable中下标索引为5（下标索引从0开始）的地方将存储md()方法。

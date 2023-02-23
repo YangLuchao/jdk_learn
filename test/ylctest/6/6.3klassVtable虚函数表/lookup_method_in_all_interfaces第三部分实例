@@ -1,0 +1,15 @@
+【实例6-3】　有以下代码：
+
+interface IA {
+   void test();
+}
+
+abstract class CA implements IA{ }
+
+public abstract class MirandaTest  extends CA {
+   public abstract void test();
+}
+
+在处理MirandaTest类的test()方法时，从CA和Object父类中无法搜索到test()方法，
+但是在处理CA时，由于CA类没有实现IA接口中的test()方法，所以CA类的vtable中含有代表test()方法的vtableEntry，
+那么MirandaTest类中的test()方法此时就不需要一个新的vtableEntry了，因此方法最终返回false。

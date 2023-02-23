@@ -1,0 +1,38 @@
+Java对象创建的流程大概如下：
+
+（1）检查对象所属类是否已经被加载解析。
+
+（2）为对象分配内存空间。
+
+（3）将分配给对象的内存初始化为零值。
+
+（4）执行对象的<init>方法进行初始化。
+
+下面举个例子。
+
+【实例9-1】　有以下代码：
+
+public class Test {
+   public static void main(String[] args) {
+       Test obj = new Test();
+   }
+}
+
+main()方法对应的Class文件内容如下：
+
+public static void main(java.lang.String[]);
+   descriptor: ([Ljava/lang/String;)V
+   flags: ACC_PUBLIC, ACC_STATIC
+   Code:
+     stack=2, locals=2, args_size=1
+       0: new           #1                       // class com/test/Test
+       3: dup
+       4: invokespecial #16                      // Method "<init>":()V
+       7: astore_1
+       8: return
+
+使用new关键字创建Test对象，如果是解释执行，那么对应生成的new字节码指令会执行TemplateTable::_new()函数生成的一段机器码。
+
+下面以TemplateTable::_new()函数的源代码和生成的机器码对应的汇编的形式来分析创建对象的过程。
+
+TemplateTable::_new()函数的实现如下：

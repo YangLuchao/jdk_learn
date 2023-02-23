@@ -1,0 +1,10 @@
+有以下代码
+
+interface IA{
+  int md();
+}
+
+public abstract  class TestVtable  implements IA {}
+
+对于上例来说，TestVtable类没有实现IA接口中定义的md()方法，因此会添加到fill_in_mirandas()方法中定义的mirandas数组中。
+最后调用put_method_at()方法将miranda方法存放到下标索引为5的vtableEntry中。

@@ -1,0 +1,32 @@
+【实例6-2】　有以下代码
+
+public interface IA{
+  void test();
+}
+
+public abstract class CA implements IA{
+   public CA(){
+      test();
+  }
+}
+
+CA类实现了IA接口，但是并没有实现接口中定义的test()方法。
+以上源代码并没有任何问题，但是假如只遍历类及父类，那么是无法查找到test()方法的，
+因此早期的HotSpot VM需要Javac等编译器为CA类合成一个miranda方法，代码如下：
+
+public interface IA{
+    void test();
+  }
+  
+  public abstract class CA implements IA{
+     public CA(){
+        test();
+    }
+  
+    // 合法的miranda方法
+    public abstract void test();
+  }
+
+  这样就解决了HotSpot VM不搜索接口的Bug。
+  现在的虚拟机版本并不需要合成miranda方法（Class文件中不存在miranda方法），但是在填充类的vtable时，
+  如果这个类实现的接口中存在没有被实现的方法，仍然需要在vtable中新增vtableEntry，其实也是起到了和之前一样的效果。

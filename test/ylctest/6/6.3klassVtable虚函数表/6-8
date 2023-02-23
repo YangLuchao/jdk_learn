@@ -1,0 +1,15 @@
+有以下代码：
+
+interface IA{
+   default void test(){ }
+}
+
+public abstract  class TestVtable implements IA{ }
+
+在处理TestVtable时有一个默认的方法test()，由于表示当前类的InstanceKlass实例的_default_vtable_indices属性为NULL，
+所以首先会调用create_new_vtable_indices()函数根据默认方法的数量len初始化属性
+
+对于实例6-8来说，调用update_inherited_vtable()函数时传入的default_index的值为0。
+由于没有重写任何父类方法，所以函数返回true，表示需要一个新的vtableEntry，不过还需要在InstanceKlass::_default_vtable_indices属性中记录映射关系。
+也就是说第0个默认方法要存储到下标索引为5的vtableEntry中。
+

@@ -1,0 +1,11 @@
+有以下代码：
+
+public abstract  class TestVtable  {
+   public String toString(){
+       return "TestVtable";
+   }
+}
+
+上面的TestVtable类的方法共有两个：<init>与toString()。
+<init>不需要vtableEntry，toString()方法重写了Object类中的toString()方法，因此也不需要新的vtableEntry。
+toString()是可被重写的，在klassVtable::update_inherited_vtable()函数中会调用is_override()函数进行判断，这个函数在6.3.2节中介绍过，这里不再介绍。

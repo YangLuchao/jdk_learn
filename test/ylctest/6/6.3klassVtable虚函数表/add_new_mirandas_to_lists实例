@@ -1,0 +1,19 @@
+【实例6-5】　有以下代码
+
+interface IA {
+   void test();
+}
+
+abstract class CA implements IA{  }
+
+interface IB {
+   void test();
+}
+public abstract class MirandaTest  extends CA  implements IB{
+
+}
+
+如果当前类为MirandaTest，那么实现的IB接口中的test()方法没有对应的实现方法，
+但是并不一定会添加到new_mirandas数组中，这就意味着不一定会新增vtableEntry，
+还需要调用lookup_method_in_all_interfaces()函数进一步判断。
+由于当前类的父类CA中已经有名称和签名都相等的test()方法对应的vtableEntry了，所以只需要重用此vtableEntry即可。

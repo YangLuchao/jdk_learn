@@ -1,0 +1,94 @@
+有以下代码：
+
+package com.classloading;
+
+interface Computable {
+   void calculate();
+}
+
+class Computer implements Computable {
+   public int a = 1;
+
+   public void calculate() { }
+}
+
+public class Test {
+
+   public static final String k = "test";
+
+   public Test(Computable x1, Computer x2, int v) {
+       x1.calculate();
+       x2.calculate();
+       v = x2.a;
+   }
+}
+
+反编译后的代码如下：
+
+public class com.classloading.Test
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+  #1 = Methodref             #6.#14    // java/lang/Object."<init>":()V
+  #2 = InterfaceMethodref    #15.#16   // com/classloading/Computable.calculate:()V
+  #3 = Methodref             #17.#16   // com/classloading/Computer.calculate:()V
+  #4 = Fieldref              #17.#18   // com/classloading/Computer.a:I
+  #5 = Class                 #19       // com/classloading/Test
+  #6 = Class                 #20       // java/lang/Object
+  #7 = Utf8                  k
+  #8 = Utf8                  Ljava/lang/String;
+  #9 = Utf8                  ConstantValue
+ #10 = String                #21       // test
+ #11 = Utf8                  <init>
+ #12 = Utf8                  (Lcom/classloading/Computable;Lcom/classloading/Computer;I)V
+ #13 = Utf8                   Code
+ #14 = NameAndType            #11:#22  // "<init>":()V
+ #15 = Class                  #23      // com/classloading/Computable
+ #16 = NameAndType            #24:#22  // calculate:()V
+ #17 = Class                  #25      // com/classloading/Computer
+ #18 = NameAndType            #26:#27  // a:I
+ #19 = Utf8                   com/classloading/Test
+ #20 = Utf8                   java/lang/Object
+ #21 = Utf8                   test
+ #22 = Utf8                   ()V
+ #23 = Utf8                   com/classloading/Computable
+ #24 = Utf8                   calculate
+ #25 = Utf8                   com/classloading/Computer
+ #26 = Utf8                   a
+ #27 = Utf8                   I
+{
+ public static final java.lang.String k;
+   descriptor: Ljava/lang/String;
+   flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+   ConstantValue: String test
+
+ public com.classloading.Test(com.classloading.Computable, com.classloading.
+Computer, int);
+  descriptor: (Lcom/classloading/Computable;Lcom/classloading/Computer;I)V
+  flags: ACC_PUBLIC
+  Code:
+    stack=1, locals=4, args_size=4
+       0: aload_0
+       1: invokespecial    #1       // Method java/lang/Object."<init>":()V
+       4: aload_1
+       5: invokeinterface  #2,  1   // InterfaceMethod com/classloading/
+                                    // Computable.calculate:()V
+      10: aload_2
+      11: invokevirtual    #3       // Method com/classloading/Computer.
+                                    // calculate:()V
+      14: aload_2
+      15: getfield         #4       // Field com/classloading/Computer.a:I
+      18: istore_3
+      19: return
+}
+
+在常量池中，下标为1和3的是CONSTANT_Methodref_info，
+下标为2的是CONSTANT_InterfaceMethodref_info，
+下标为4的是CONSTANT_Fieldref_info，
+如图 cp_map与cp_cache_map之间的关系.png 所示
+
+cp_map数组的下标就是常量池项索引，通过此索引可直接获取常量池缓存项索引，也就是cp_cache_map栈的槽位索引。
+通过cp_cache_map的常量池缓存项索引可直接获取常量池项索引
+
+而后调用record_map_limits()函数，更新变量_resolved_reference_limit与_first_iteration_cp_cache_limit的值，对于实例7-3来说，值分别为4和1。

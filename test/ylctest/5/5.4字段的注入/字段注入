@@ -1,0 +1,107 @@
+HotSpot VM还可以给oop等实例注入一些字段，用于辅助HotSpot VM运行。例如之前多次介绍的java.lang.Class对象，表示此对象的oop实例在必要时会注入一些字段。举个例子如下：
+
+package com.classloading;
+
+class Base{
+   public static int a=1;
+   public static String b="abc";
+   public static Integer c=6;
+}
+
+Base类中声明了一些静态字段，这些字段会存储到java.lang.Class对象中，表示这个对象的oop实例有些特殊，既会存储java.lang.Class类中声明的实例字段，也会存储Base类中声明的静态字段。
+
+在java.lang.Class类中声明的所有字段如下：
+
+// 静态字段
+ANNOTATION  I
+ENUM  I
+SYNTHETIC  I
+allPermDomain  Ljava/security/ProtectionDomain;
+useCaches  Z
+serialVersionUID  J
+serialPersistentFields  [Ljava/io/ObjectStreamField;
+reflectionFactory  Lsun/reflect/ReflectionFactory;
+initted  Z
+
+// 非静态字段
+cachedConstructor  Ljava/lang/reflect/Constructor;
+newInstanceCallerCache  Ljava/lang/Class;
+name  Ljava/lang/String;
+reflectionData  Ljava/lang/ref/SoftReference;
+classRedefinedCount  I
+genericInfo  Lsun/reflect/generics/repository/ClassRepository;
+enumConstants  [Ljava/lang/Object;
+enumConstantDirectory  Ljava/util/Map;
+annotationData  Ljava/lang/Class$AnnotationData;
+annotationType  Lsun/reflect/annotation/AnnotationType;
+classValueMap  Ljava/lang/ClassValue$ClassValueMap;
+
+以上每一行信息中都包含有字段的名称和类型描述符，其中，静态字段9个，非静态字段11个，共有20个字段。
+
+打开-XX:+PrintFieldLayout选项查看Base类对应的java.lang.Class对象的内存布局，结果如下：
+
+非静态字段的布局如下：
+
+java.lang.Class: field layout
+  @ 12 --- instance fields start ---
+  @ 12 "cachedConstructor" Ljava.lang.reflect.Constructor;
+  @ 16 "newInstanceCallerCache" Ljava.lang.Class;
+  @ 20 "name" Ljava.lang.String;
+  @ 24 "reflectionData" Ljava.lang.ref.SoftReference;
+  @ 28 "genericInfo" Lsun.reflect.generics.repository.ClassRepository;
+  @ 32 "enumConstants" [Ljava.lang.Object;
+  @ 36 "enumConstantDirectory" Ljava.util.Map;
+  @ 40 "annotationData" Ljava.lang.Class$AnnotationData;
+  @ 44 "annotationType" Lsun.reflect.annotation.AnnotationType;
+  @ 48 "classValueMap" Ljava.lang.ClassValue$ClassValueMap;
+
+  @ 52 "protection_domain" Ljava.lang.Object;
+  @ 56 "init_lock" Ljava.lang.Object;
+  @ 60 "signers_name" Ljava.lang.Object;
+  @ 64 "klass" J
+  @ 72 "array_klass" J
+  @ 80 "classRedefinedCount" I   // Class类中声明的字段
+  @ 84 "oop_size" I
+  @ 88 "static_oop_field_count" I
+  @ 92 --- instance fields end ---
+  @ 96 --- instance ends ---
+
+属性的偏移从12开始，这是因为在开启指针压缩情况下，对象头占用12字节。另外还有7个注入字段布局在非静态字段的后一部分。
+
+静态字段的布局如下：
+
+@  0 --- static fields start ---
+@  0 "allPermDomain" Ljava.security.ProtectionDomain;
+@  4 "serialPersistentFields" [Ljava.io.ObjectStreamField;
+@  8 "reflectionFactory" Lsun.reflect.ReflectionFactory;
+@ 16 "serialVersionUID" J
+@ 24 "ANNOTATION" I
+@ 28 "ENUM" I
+@ 32 "SYNTHETIC" I
+@ 36 "useCaches" Z
+@ 37 "initted" Z
+@ 40 --- static fields end ---
+
+偏移量从0开始，实际上这些静态字段会挨着非静态字段进行布局，为了能找到java.lang.Class对象中静态字段的存储区域，在java.lang.Class对象对应的InstanceMirrorKlass类中定义了一个静态变量_offset_of_static_fields，这个值保存着静态字段的起始偏移量96。
+
+对于java.lang.Class类来说，需要注入的字段主要有：
+
+源代码位置：openjdk/hotspot/src/share/vm/classfile/javaClasses.hpp
+
+class java_lang_Class : AllStatic {
+ private:
+  static int _klass_offset;
+  static int _array_klass_offset;
+
+  static int _oop_size_offset;
+  static int _static_oop_field_count_offset;
+
+  static int _protection_domain_offset;
+  static int _init_lock_offset;
+  static int _signers_offset;
+  ...
+}
+
+
+
+
