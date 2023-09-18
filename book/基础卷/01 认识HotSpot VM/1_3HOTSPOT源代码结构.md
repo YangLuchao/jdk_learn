@@ -7,7 +7,7 @@ make目录下包含用于编译HotSpot项目的各种配置文件；src目录是
 代码都在这个目录下；test目录下包含HotSpot项目相关的一些单元测试用例。
 src目录及src的子目录vm的结构分别如图1-5和图1-6所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.6r80l83mjug.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.6r80l83mjug.webp)
 
 src目录下包含HotSpot项目的主体源代码，主要由cpu、OS、os_cpu与share 4个子目录构成。
 

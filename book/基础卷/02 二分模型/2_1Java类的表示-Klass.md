@@ -6,7 +6,7 @@
 
 Java类通过Klass来表示。简单来说Klass就是Java类在HotSpot中的C++对等体，主要用于描述Java对象的具体类型。一般而言，HotSpot VM在加载Class文件时会在元数据区创建Klass,表示类的元数据，通过Klass可以获取类的常量池、字段和方法等信息。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.2ifj5f13uym0.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.2ifj5f13uym0.webp)
 
 Metadata是元数据类的基类，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。
 
@@ -194,7 +194,7 @@ static int base_offset_in_bytes(BasicType type) {
 
 最终计算出来的数组类型的\_layout_helper值为负数，因为最高位为1,而对象类型通常是一个正数，这样就可以简单地通过判断\_layout_helper值来区分数组和对象。_layout_helper的最终布局如图2-2所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.7jezrogueno0.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.7jezrogueno0.webp)
 
 ## 2.\_primary_supers、\_super_check_offset、\_secondary_supers与_secondary_super_cache
 
@@ -559,7 +559,7 @@ static int size(int vtable_length, int itable_length,
 
 size()函数的返回值就是此次创建Klass实例所需要开辟的内存空间。由该函数的计算逻辑可以看出，Klass实例的内存布局如图2-3所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.4bfbydzjic00.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.4bfbydzjic00.webp)
 
 InstanceKlass本身占用的内存其实就是类中声明的实例变量。
 
@@ -658,13 +658,13 @@ static void init_offset_of_static_fields() {
 
 添加虚拟机参数命令-XX:+PrintFieldLayout后，打印的java.lang.Class对象的非静态字段布局如下：
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.4ss33pm49c40.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.4ss33pm49c40.jpg)
 
 以上就是java.lang.Class对象非静态字段的布局，在类解析过程中已经计算出了各个字段的偏移量。当完成非静态字段的布局后，紧接着会布局静态字段，此时的_offset_of_static_fields属性的值为96。
 
 我们需要分清Java类及对象在HotSpot VM中的表示形式，如图2-4所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.b2axbdx0nww.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.b2axbdx0nww.webp)
 
 ==java.lang.Class对象是通过对应的oop实例保存类的静态属性的，需要通过特殊的方式计算它们的大小并遍历各个属性==。
 
@@ -911,7 +911,7 @@ int ArrayKlass::static_size(int header_size) {
 
 前面介绍过InstanceKlass实例的内存布局，相比之下TypeArrayKlass的内存布局比较简单，如图2-5所示。ObjectArrayKlass实例的布局也和TypeArrayKlass一样。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.3cvqcb0h5ry0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.3cvqcb0h5ry0.jpg)
 
 TypeArrayKlass的构造函数如下：
 
@@ -1071,7 +1071,7 @@ oop java_lang_Class::create_basic_type_mirror(const char* basic_type_name, Basic
 
 在以上代码中，==调用`InstanceMirrorKlass`实例（表示`java.lang.Class`类）的`allocate_instance()`函数创建oop(表示java.lang.Class对象）,`_component_mirror`最终设置的就是这个oop==。一维或多维数组的元素类型如果是对象，使用Klass实例表示，如Object[]的元素类型为Object,使用InstanceKlass实例表示；==一维或多维数组的元素类型如果是基本类型，因为没有对应的Klass实例，所以使用java.lang.Class对象描述boolean和int等类型，这样基本类型的数组就会与oop对象（表示java.lang.Class对象）产生关联==，相关属性的指向如图2-6所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.6kuzz5r2cfw0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.6kuzz5r2cfw0.jpg)
 
 > 可以在oop对象中通过_array_klass_offset保存的偏移找到对应的TypeArrayKlass实例。
 >
@@ -1262,7 +1262,7 @@ void ArrayKlass::complete_create_array_klass(ArrayKlass* k, KlassHandle super_kl
 
 举个例子，表示Object类的InstanceKlass与表示一维数组Object[]的ObjArrayKlass之间的相关属性指向如图2-7所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.67v735285u00.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.67v735285u00.jpg)
 
 > 表示组件类型为对象类型的一维数组(ObjArrayKlass)通过element_klass_bottom_klass可找到对应的InstanceKlass表示的Java类
 >
@@ -1321,6 +1321,6 @@ Klass* ObjArrayKlass::array_klass_impl(bool or_null, int n, TRAPS) {
 
 多维数组会间接递归调用以上函数创建符合维度要求的数组类型。表示Java类的InstanceKlass实例与以此Java类为元素类型的一维与二维数组之间的关系如图2-8所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.6ciomn6oz480.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.6ciomn6oz480.jpg)
 
 二维数组Object[][]、一维数组Object[]和Object类之间的关系就符合图2-8所示的关系。

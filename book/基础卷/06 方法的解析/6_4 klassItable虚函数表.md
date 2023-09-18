@@ -6,7 +6,7 @@
 
 ==`Java`的`itable`是`Java`接口函数表，可以方便查找某个接口对应的实现方法==。==`itable`的结构比`vtable`复杂，除了记录方法地址之外还要记录该方法所属的接口类`Klass`==，如图6-5所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.1pxtyubfbsyo.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.1pxtyubfbsyo.jpg)
 
 图6-5　itable的结构
 
@@ -325,7 +325,7 @@ intptr_t* end_of_itable() const           {
 
 在`klassItable`的构造函数中会初始化`klassItable`类中定义的各个属性，这几个属性在6.4.1节中介绍过，各个属性的说明如图6-6所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.14fbbp79rbj4.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.14fbbp79rbj4.jpg)
 
 图6-6　klassItable中各属性的说明
 

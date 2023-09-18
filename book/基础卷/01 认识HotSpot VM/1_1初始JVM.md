@@ -11,7 +11,7 @@ JVM的构成主要包括如下几点：
 
 ==JVM定义了一套自己的指令集，即JVM字节码指令集，符合Class文件规范的字节码都可以被JVM解析、编译并执行==。JVM的结构如图1-1所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.7cmlt9p7y0o0.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.7cmlt9p7y0o0.webp)
 
 下面简单介绍JVM结构的各个组成部分。
 
@@ -54,6 +54,6 @@ JVM的构成主要包括如下几点：
 
 ==垃圾收集器==一般完成两件事，即==标记不再使用的对象和回收这些无用对象==。不同厂商及相同厂商的不同JVM版本提供的垃圾收集器可能不同，例如OpenJDK8主要包含的垃圾收集器如图1-2所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230511/image.1l3y0pi5y0lc.webp)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230511/image.1l3y0pi5y0lc.webp)
 
 图1-2中的连线表示可以使用连线两端的两种收集器分别收集年轻代和老年代的内存空间，而G1收集器既可以收集年轻代的内存空间，也可以收集老年代的内存空间。

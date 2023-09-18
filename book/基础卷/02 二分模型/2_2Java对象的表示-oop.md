@@ -4,7 +4,7 @@ Java对象用oop来表示，在Java创建对象的时候创建。也就是说，
 
 oopDesc类的继承关系如图2-9所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.4gikndzxjr40.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.4gikndzxjr40.jpg)
 
 > `markOopDesc`对应java对象头对象
 >
@@ -74,7 +74,7 @@ inline void* oopDesc::field_base(int offset) const {
 
 markOopDesc类的实例可以表示Java对象的头信息Mark Word,包含的信息有哈希码、GC分代年龄、偏向锁标记、线程持有的锁、偏向线程ID和偏向时间戳等。==markOopDesc类的实例并不能表示一个具体的Java对象，而是通过一个字的各个位来表示Java对象的头信息。==对于32位平台来说，一个字为32位，对于64位平台来说，一个字为64位。由于目前64位是主流，所以不再对32位的结构进行说明。图2-10所示为Java对象在不同锁状态下的MarkWord各个位区间的含义。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.30azsimh0l60.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.30azsimh0l60.jpg)
 
 其中，各部分的说明如下：
 
@@ -91,7 +91,7 @@ markOopDesc类的实例可以表示Java对象的头信息Mark Word,包含的信�
 
 ==instanceOopDesc类的实例表示除数组对象外的其他对象==。在HotSpot虚拟机中，对象在内存中存储的布局可以分为如图2-11所示的三个区域：==对象头（header)、对象字段数据（field data)和对齐填充（padding)==。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.58bgkfc2f1c0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.58bgkfc2f1c0.jpg)
 
 下面详细介绍这三个组成部分。
 
@@ -154,7 +154,7 @@ instanceOop InstanceKlass::allocate_instance(TRAPS) {
 
 arrayOopDesc类的实例表示Java数组对象。具体的基本类型数组或对象类型数组由具体的C++中定义的子类实例表示。在HotSpot VM中，数组对象在内存中的布局可以分为如图2-12所示的三个区域：对象头（header)、对象字段数据（field data)和对齐填充(padding)。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.1e8b378tlwsg.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.1e8b378tlwsg.jpg)
 
 与Java对象内存布局唯一不同的是，数组对象的对象头中还会存储数组的长度`length`,它占用的内存空间为4字节。在64位系统下，存放`_metadata`的空间是8字节，`_mark`是8字节，`length`是4字节，对象头为20字节，由于要按8字节对齐，所以会填充4字节，最终占用24字节。64位开启指针压缩的情况下，存放`_metadata`的空间是4字节，_mark是8字节，`length`是4字节，对象头为16字节。
 

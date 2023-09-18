@@ -4,13 +4,13 @@
 
 ==可以将Handle理解成访问对象的“句柄”。垃圾回收时对象可能被移动（对象地址发生改变）,通过Handle访问对象可以对使用者屏蔽垃圾回收细节==。Handle涉及的相关类的继承关系如图2-13所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.6gc8kwmfyt80.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.6gc8kwmfyt80.jpg)
 
 ==HotSpot会通过Handle对oop和某些Klass进行操作==。如图2-14所示为直接引用的情况，图2-15所示为间接引用的情况。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.375xwrlmfvi0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.375xwrlmfvi0.jpg)
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.39fv3qu2f2w0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.39fv3qu2f2w0.jpg)
 
 可以看到，==当对oop直接引用时，如果oop的地址发生变化，那么所有的引用都要更新==，图2-14中有3处引用都需要更新；==当通过Handle对oop间接引用时，如果oop的地址发生变化，那么只需要更新Handle中保存的对oop的引用即可==。==每个oop都有一个对应的Handle,Handle继承关系与oop继承关系类似，也有对应的关系，如通过instanceHandle操作instanceOopDesc,通过objArrayHandle操作objArrayOopDesc==。oop涉及的相关类的继承关系可以参考图2-9,这里不再给出。
 
@@ -206,7 +206,7 @@ class Chunk: CHeapObj<mtChunk> {
 
 HandleArea与Chunk类之间的关系如图2-16所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230521/image.3w4bsgypa660.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230521/image.3w4bsgypa660.jpg)
 
 图2-16已经清楚地展示了`HandleArea`与`Chunk`的关系，灰色部分表示在`Chunk`中已经分配的内存，那么新的内存分配就可以从`_hwm`开始。现在看`Amalloc_4()`函数的逻辑就非常容易理解了，这个函数还会调用`grow()`函数分配新的`Chunk`块，代码如下：
 

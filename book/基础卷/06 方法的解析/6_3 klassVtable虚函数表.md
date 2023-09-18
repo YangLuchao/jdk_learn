@@ -66,7 +66,7 @@ vtableEntry* table() const {
 
 `vtable`在`Klass`中的内存布局如图6-4所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.2vcrvlu4jk60.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.2vcrvlu4jk60.jpg)
 
 图6-4　`vtable`在`Klass`中的内存布局
 

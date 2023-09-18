@@ -241,7 +241,7 @@ class InlineTableSizes : StackObj {
 
 在创建`ConstMethod`实例时，上面的一些属性值会保存到`ConstMethod`实例中，因此需要开辟相应的存储空间。`ConstMethod`实例的内存布局如图6-2所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.4luvggk7zcm0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.4luvggk7zcm0.jpg)
 
 图6-2　`ConstMethod`实例的内存布局
 
@@ -400,7 +400,7 @@ static int header_size() {
 
 如果是本地方法，`Method`还需要负责保存`native_function`和`signature_handler`属性的信息，因此需要在`Method`本身占用的内存空间之后再开辟两个指针大小的存储空间。Method实例在表示本地方法时的内存布局如图6-3所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.6ev9j34qh0o0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.6ev9j34qh0o0.jpg)
 
 图6-3　表示本地方法的`Method`实例的内存布局
 

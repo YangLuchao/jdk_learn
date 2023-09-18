@@ -6,7 +6,7 @@
 
 `Method`类没有子类，其类继承关系如图6-1所示。
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.3kse2y38nhk0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.3kse2y38nhk0.jpg)
 
 图6-1　`Method`类的继承关系
 
@@ -88,19 +88,19 @@ class Method : public Metadata {
 
 表6-1　Method类中的部分属性说明
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.4kufx00y4qa0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.4kufx00y4qa0.jpg)
 
 另外，方法的访问标志_access_flags的取值如表6-2所示。
 
 表6-2　方法的访问标志
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.5kmcnahq8wg0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.5kmcnahq8wg0.jpg)
 
 _vtable_index的取值如表6-3所示。
 
 表6-3　_vtable_index的取值说明
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.4s70jbm7cuq0.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.4s70jbm7cuq0.jpg)
 
 # ConstMethod类
 
@@ -145,7 +145,7 @@ private:
 
 表6-4　`ConstMethod`类中的属性说明
 
-![image](https://cdn.staticaly.com/gh/YangLuchao/img_host@master/20230524/image.136wnvlt1t40.jpg)
+![image](https://github.com/YangLuchao/img_host/raw/master/20230524/image.136wnvlt1t40.jpg)
 
 通过`_constants`和`_method_idnum`这两个参数可以找到对应的`Method`实例，因为`Method`有`ConstMethod`指针，但`ConstMethod`没有`Method`指针，需要通过以下步骤查找：
 
